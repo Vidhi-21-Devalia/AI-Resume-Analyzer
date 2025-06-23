@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f0f23 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(255, 119, 198, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #64748b, #e2e8f0, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(51, 65, 85, 0.3);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(124, 58, 237, 0.3);
+            box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 16px;
+            border: 1px solid rgba(71, 85, 105, 0.2);
+        }
+
+        .score-number {
+            font-size: 4.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .score-label {
+            color: #94a3b8;
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(71, 85, 105, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 4px;
+            transition: width 2s ease-in-out;
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section h3 {
+            color: #e2e8f0;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .skill-tag {
+            background: rgba(124, 58, 237, 0.15);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            color: #c4b5fd;
+            padding: 0.75rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-tag::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .skill-tag:hover::before {
+            left: 100%;
+        }
+
+        .skill-tag:hover {
+            background: rgba(124, 58, 237, 0.25);
+            border-color: rgba(124, 58, 237, 0.5);
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .matched-skill {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+        }
+
+        .matched-skill:hover {
+            background: rgba(16, 185, 129, 0.25);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        .resume-skill {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+        }
+
+        .resume-skill:hover {
+            background: rgba(59, 130, 246, 0.25);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .jd-skill {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: #fbbf24;
+        }
+
+        .jd-skill:hover {
+            background: rgba(245, 158, 11, 0.25);
+            border-color: rgba(245, 158, 11, 0.5);
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #7c3aed;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 1rem 2rem;
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+            background: rgba(124, 58, 237, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .back-link:hover::before {
+            left: 100%;
+        }
+
+        .back-link:hover {
+            background: rgba(124, 58, 237, 0.2);
+            border-color: rgba(124, 58, 237, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.3);
+        }
+
+        .no-match {
+            color: #f87171;
+            font-style: italic;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(71, 85, 105, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .card {
+                padding: 1.5rem;
+            }
+            .score-number {
+                font-size: 3rem;
+            }
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container fade-in">
+        <div class="header">
+            <h1>📊 Analysis Results</h1>
+            <p>Your resume matching analysis is complete</p>
+        </div>
+
+        <div class="card">
+            <div class="score-display">
+                <div class="score-number">{{ score }}%</div>
+                <div class="score-label">Match Score</div>
+                <div class="score-bar">
+                    <div class="score-fill" style="width: {{ score }}%;"></div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ matched|length }}</div>
+                    <div class="stat-label">Matched Skills</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ resume_skills|length }}</div>
+                    <div class="stat-label">Resume Skills</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ jd_skills|length }}</div>
+                    <div class="stat-label">Required Skills</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>🎯 Matched Skills</h3>
+                <div class="skills-grid">
+                    {% for skill in matched %}
+                        <div class="skill-tag matched-skill">{{ skill }}</div>
+                    {% empty %}
+                        <div class="no-match">No matching skills found</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>📄 Your Resume Skills</h3>
+                <div class="skills-grid">
+                    {% for skill in resume_skills %}
+                        <div class="skill-tag resume-skill">{{ skill }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>💼 Job Description Skills</h3>
+                <div class="skills-grid">
+                    {% for skill in jd_skills %}
+                        <div class="skill-tag jd-skill">{{ skill }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <a href="/" class="back-link">← Analyze Another Resume</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-4px) scale(1.01)';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            const skillTags = document.querySelectorAll('.skill-tag');
+            skillTags.forEach((tag, index) => {
+                tag.style.opacity = '0';
+                tag.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    tag.style.transition = 'all 0.5s ease';
+                    tag.style.opacity = '1';
+                    tag.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+
+            const scoreElement = document.querySelector('.score-number');
+            const scoreFill = document.querySelector('.score-fill');
+            if (scoreElement && scoreFill) {
+                const score = parseInt(scoreElement.textContent);
+                let gradient;
+                if (score >= 80) {
+                    gradient = 'linear-gradient(135deg, #10b981, #34d399)';
+                } else if (score >= 60) {
+                    gradient = 'linear-gradient(135deg, #f59e0b, #fbbf24)';
+                } else {
+                    gradient = 'linear-gradient(135deg, #ef4444, #f87171)';
+                }
+                scoreElement.style.background = gradient;
+                scoreElement.style.webkitBackgroundClip = 'text';
+                scoreElement.style.webkitTextFillColor = 'transparent';
+                scoreFill.style.background = gradient;
+            }
+        });
+    </script>
+</body>
+</html>
